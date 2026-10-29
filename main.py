@@ -1,16 +1,14 @@
-# This is a sample Python script.
+"""
+SentinelFlow Main Entry Point.
+Run this file to launch the SentinelFlow demo server.
+"""
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from app import app
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    print("=" * 60)
+    print("SentinelFlow: Behavior-Based Risk Level Prediction System")
+    print("Banking Demo Server running at: http://127.0.0.1:5000")
+    print("API Documentation & Health at: http://127.0.0.1:5000/api/health")
+    print("=" * 60)
+    app.run(host="127.0.0.1", port=5000, debug=False)

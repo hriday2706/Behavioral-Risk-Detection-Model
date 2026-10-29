@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelFlow | Behavior-Based Risk Engine</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header">
+    <div class="logo-group">
+      <div class="logo-badge">SENTINEL</div>
+      <div>
+        <div class="logo-title">SentinelFlow Bank</div>
+        <div class="logo-sub">Behavior-Based Session Risk Engine & Decision-Path Explainer</div>
+      </div>
+    </div>
+    <div class="scenario-bar">
+      <span>Scenarios:</span>
+      <button class="btn btn-scenario" onclick="loadScenario('A')" title="Routine human-paced session on familiar device">Scenario A: Routine</button>
+      <button class="btn btn-scenario" onclick="loadScenario('B')" title="Brute force login bursts + immediate password change request on unfamiliar device">Scenario B: Elevated Risk</button>
+      <button class="btn btn-scenario" onclick="loadScenario('C')" title="Unfamiliar device but ordinary behavior">Scenario C: Ambiguous</button>
+      <button class="btn btn-secondary" onclick="resetDemoSession()" title="Reset session to clean initial state">Reset</button>
+      <button class="btn btn-secondary btn-sm" onclick="openModelModal()">Model Card & Metrics</button>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <main class="container">
+    <!-- Left Column: User & Bank Actions -->
+    <section class="left-col">
+      <!-- User Profile & Account Summary -->
+      <div class="card">
+        <div class="card-title">
+          <span>Demo Account</span>
+          <span id="session-verification-badge" class="badge-unverified">Unverified</span>
+        </div>
+        <div class="account-balance-card">
+          <div class="balance-label">Available Balance</div>
+          <div class="balance-amount" id="user-balance">$14,850.50</div>
+          <div class="account-number" id="user-acc-num">ACC-7890-4123</div>
+        </div>
+        <div class="user-meta-row">
+          <span>Account Holder</span>
+          <strong id="user-name">Alex Mercer</strong>
+        </div>
+        <div class="user-meta-row">
+          <span>Active Session ID</span>
+          <span id="session-id-display" style="font-family: monospace; font-size: 0.75rem;">Loading...</span>
+        </div>
+        <div class="user-meta-row">
+          <span>Device Context</span>
+          <span id="device-context-display" class="badge badge-familiar">Familiar</span>
+        </div>
+        <div class="user-meta-row">
+          <span>Location Context</span>
+          <span id="location-context-display" class="badge badge-location">Home</span>
+        </div>
+      </div>
+
+      <!-- Account Actions -->
+      <div class="card">
+        <div class="card-title">
+          <span>Account Actions</span>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">Live Trigger</span>
+        </div>
+        <div class="actions-grid">
+          <button class="action-btn" onclick="executeAction('balance')">
+            <span>View Account Balance</span>
+            <span class="btn-badge badge-neutral">Standard</span>
+          </button>
+          <button class="action-btn" onclick="executeAction('statement')">
+            <span>Download Bank Statement</span>
+            <span class="btn-badge badge-neutral">Standard</span>
+          </button>
+          <button class="action-btn" onclick="executeSecurityChange('password')">
+            <span>Change Account Password</span>
+            <span class="btn-badge badge-sensitive">Sensitive</span>
+          </button>
+          <button class="action-btn" onclick="executeSecurityChange('email')">
+            <span>Update Email Address</span>
+            <span class="btn-badge badge-sensitive">Sensitive</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Login Context Simulator -->
+      <div class="card">
+        <div class="card-title">
+          <span>Session Context Controls</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="chk-unfamiliar-device" onchange="toggleContext('device')">
+            Mark device as Unfamiliar
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="chk-location-anomaly" onchange="toggleContext('location')">
+            Simulate Location Anomaly
+          </label>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="simulateFailedAttempt()">
+            Simulate +1 Failed Password Attempt
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Center Column: Event Timeline -->
+    <section class="center-col">
+      <div class="card" style="height: 100%;">
+        <div class="card-title">
+          <span>Session Event Timeline (Server Stored)</span>
+          <span id="event-count-badge" style="font-size: 0.75rem; color: var(--text-muted);">0 events</span>
+        </div>
+        <div class="timeline-list" id="events-timeline">
+          <!-- Timeline items injected dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Risk & Explainability Panel -->
+    <section class="right-col risk-panel-col">
+      <!-- Risk Status & Assessment -->
+      <div class="card">
+        <div class="card-title">
+          <span>Real-time Risk Classification</span>
+          <span style="font-size: 0.75rem; color: var(--accent);">ML Decision Tree</span>
+        </div>
+        <div id="risk-category-badge" class="risk-badge risk-low">LOW RISK</div>
+
+        <div class="prob-group">
+          <div class="prob-row">
+            <span>Class Probabilities (Tree Leaf Proportions):</span>
+          </div>
+          <div class="prob-row">
+            <span>Low Risk:</span>
+            <strong id="prob-low-val">0%</strong>
+          </div>
+          <div class="prob-track"><div id="prob-low-bar" class="prob-fill fill-low" style="width: 0%;"></div></div>
+
+          <div class="prob-row">
+            <span>Medium Risk:</span>
+            <strong id="prob-med-val">0%</strong>
+          </div>
+          <div class="prob-track"><div id="prob-med-bar" class="prob-fill fill-med" style="width: 0%;"></div></div>
+
+          <div class="prob-row">
+            <span>High Risk:</span>
+            <strong id="prob-high-val">0%</strong>
+          </div>
+          <div class="prob-track"><div id="prob-high-bar" class="prob-fill fill-high" style="width: 0%;"></div></div>
+        </div>
+
+        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 0.85rem;">
+          *Tree leaf class distributions represent synthetic training proxy weights, not calibrated real-world fraud probabilities.
+        </div>
+      </div>
+
+      <!-- Actual Tree Path Explanation -->
+      <div class="card">
+        <div class="card-title">
+          <span>Model Decision-Path Explanation</span>
+        </div>
+        <div class="explanation-box">
+          <ul class="explanation-list" id="explanation-list">
+            <li>Loading decision path...</li>
+          </ul>
+        </div>
+        <div class="card-title" style="margin-top: 0.5rem; font-size: 0.85rem;">
+          <span>Context Observations</span>
+        </div>
+        <div class="context-box" id="context-observations-box">
+          Observing telemetry...
+        </div>
+      </div>
+
+      <!-- Backend Risk Policy & Verification Status -->
+      <div class="card">
+        <div class="card-title">
+          <span>Security Policy Enforcement</span>
+        </div>
+        <div id="policy-status-container" class="policy-status-box allowed">
+          <div style="font-weight: 600; margin-bottom: 0.25rem;" id="policy-status-title">Status: Action Allowed</div>
+          <div id="policy-status-msg" style="color: var(--text-muted); font-size: 0.8rem;">
+            Standard actions and low-risk operations permitted without step-up challenge.
+          </div>
+        </div>
+        <div id="verification-action-container" style="margin-top: 0.75rem; display: none;">
+          <button class="btn btn-danger" style="width: 100%;" onclick="openVerificationModal()">
+            Complete Step-Up Verification
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Step-Up Verification Modal -->
+  <div class="modal-overlay" id="verification-modal">
+    <div class="modal-card">
+      <div class="modal-title">Simulated Step-Up Verification</div>
+      <div class="modal-body">
+        High-risk behavioral signals were detected on this session. Before proceeding with your sensitive account change, verify your identity using the demonstration one-time passcode.
+        <div style="margin-top: 0.75rem; background: rgba(59, 130, 246, 0.1); padding: 0.6rem; border-radius: 6px; border: 1px dashed #3b82f6;">
+          Demo Passcode: <strong>123456</strong>
+        </div>
+      </div>
+      <input type="text" id="otp-input-field" class="otp-input" maxlength="6" placeholder="123456" value="123456">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeVerificationModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitVerification()">Verify & Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model Info Modal -->
+  <div class="modal-overlay" id="model-modal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-title">Trained Decision Tree Model Card</div>
+      <div class="modal-body" id="model-modal-content">
+        Loading model metadata...
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModelModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast-notification">Notification</div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

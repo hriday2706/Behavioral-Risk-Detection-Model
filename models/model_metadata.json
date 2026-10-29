@@ -1,0 +1,120 @@
+{
+  "model_name": "SentinelFlow Explainable Decision Tree",
+  "algorithm": "DecisionTreeClassifier",
+  "parameters": {
+    "max_depth": 4,
+    "min_samples_leaf": 8,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "classes": [
+    "high",
+    "low",
+    "medium"
+  ],
+  "feature_names": [
+    "login_attempt_count",
+    "login_failure_count",
+    "login_failure_rate",
+    "median_login_interval_sec",
+    "min_login_interval_sec",
+    "session_duration_sec",
+    "sensitive_action_count",
+    "time_to_first_sensitive_action_sec",
+    "actions_last_60_sec",
+    "unfamiliar_device_flag",
+    "unusual_time_flag",
+    "location_anomaly_flag",
+    "security_change_after_login_flag",
+    "action_burst_count"
+  ],
+  "tree_depth": 4,
+  "node_count": 15,
+  "trained_at_utc": "2026-10-29T20:08:46.534059+00:00",
+  "training_samples": 839,
+  "test_samples": 180,
+  "test_metrics": {
+    "confusion_matrix": [
+      [
+        80,
+        10,
+        0
+      ],
+      [
+        8,
+        46,
+        0
+      ],
+      [
+        0,
+        0,
+        36
+      ]
+    ],
+    "macro_f1": 0.9117,
+    "balanced_accuracy": 0.9136,
+    "false_positive_rate_high": 0.0,
+    "per_class": {
+      "low": {
+        "precision": 0.9091,
+        "recall": 0.8889,
+        "f1_score": 0.8989,
+        "support": 90
+      },
+      "medium": {
+        "precision": 0.8214,
+        "recall": 0.8519,
+        "f1_score": 0.8364,
+        "support": 54
+      },
+      "high": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 36
+      }
+    }
+  },
+  "baseline_metrics": {
+    "confusion_matrix": [
+      [
+        63,
+        27,
+        0
+      ],
+      [
+        0,
+        54,
+        0
+      ],
+      [
+        0,
+        0,
+        36
+      ]
+    ],
+    "macro_f1": 0.8745,
+    "balanced_accuracy": 0.9,
+    "false_positive_rate_high": 0.0,
+    "per_class": {
+      "low": {
+        "precision": 1.0,
+        "recall": 0.7,
+        "f1_score": 0.8235,
+        "support": 90
+      },
+      "medium": {
+        "precision": 0.6667,
+        "recall": 1.0,
+        "f1_score": 0.8,
+        "support": 54
+      },
+      "high": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 36
+      }
+    }
+  }
+}

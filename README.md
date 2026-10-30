@@ -1,7 +1,6 @@
 <div align="center">
 
-# 🛡️ SentinelFlow
-### **Behavior-Based Session Risk Engine & Decision-Path Explainer**
+# **Behavior-Based Session Risk Engine & Decision-Path Explainer**
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask 3.0](https://img.shields.io/badge/Flask-3.0%2B-000000.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
